@@ -10,3 +10,5 @@ Quickstart
 
     $ pip3 install .
     $ e3py -h
+    $ e3py module -h
+    $ # etc.
