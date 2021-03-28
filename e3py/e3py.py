@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Python utility to download and install modules.
+Python utility to interact with e3.
 
 Requires a python-gitlab configuration file (e.g. ~/.python-gitlab.cfg) with 'ess-config' defined.
 """
@@ -123,7 +123,7 @@ def module(gl: gitlab.Gitlab, name: str, _all: bool, git_url: bool, tags: bool):
             pprint(project.attributes, indent=2)
 
 
-# maybe use treelib?
+# todo: maybe use treelib?
 def env(name: str, _all: bool, meta: bool):
     env_vars = [_ for _ in map(os.environ.get, E3_ENV_VARS)]
     if not all(env_vars):
@@ -167,12 +167,10 @@ def env(name: str, _all: bool, meta: bool):
 
 
 def parse_args():
-    parser = ArgumentParser(
-        description="Python utility to download and install modules."
-    )
-    subparsers = parser.add_subparsers(dest="command", help="command to execute")
+    parser = ArgumentParser(description="Python utility to interact with e3.")
+    subparsers = parser.add_subparsers(dest="command", title="subcommands")
 
-    group_parser = subparsers.add_parser("group")
+    group_parser = subparsers.add_parser("group", help="e3 gitlab group commands")
     gp_group = group_parser.add_mutually_exclusive_group()
     gp_group.add_argument("name", nargs="?")
     gp_group.add_argument(
@@ -182,7 +180,7 @@ def parse_args():
         "--modules", action="store_true", help="list all modules in group"
     )
 
-    module_parser = subparsers.add_parser("module")
+    module_parser = subparsers.add_parser("module", help="e3 gitlab module commands")
     mp_group = module_parser.add_mutually_exclusive_group()
     mp_group.add_argument("name", nargs="?")
     mp_group.add_argument(
@@ -195,7 +193,7 @@ def parse_args():
         "--tags", action="store_true", help="list tags for module"
     )
 
-    env_parser = subparsers.add_parser("env")
+    env_parser = subparsers.add_parser("env", help="e3 environment commands")
     ep_group = env_parser.add_mutually_exclusive_group()
     ep_group.add_argument("name", nargs="?")
     ep_group.add_argument(
@@ -213,7 +211,10 @@ def main():
     kwargs = vars(args)
     if kwargs["command"] != "env":
         kwargs["gl"] = gl
-    globals()[kwargs.pop("command")](**kwargs)
+    try:
+        globals()[kwargs.pop("command")](**kwargs)
+    except KeyError:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

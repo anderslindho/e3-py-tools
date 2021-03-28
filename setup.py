@@ -3,6 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name="e3-py-tools",
     author="Anders Lindh Olsson",
+    version="0.9.0",
     python_requires=">=3.6",
     packages=find_packages(),
     setup_requires=["setuptools_scm"],
