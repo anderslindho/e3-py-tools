@@ -18,7 +18,7 @@ E3_ENV_VARS = [
 def group(gl: gitlab.Gitlab, name: str, _all: bool, modules: bool):
     groups = {
         group.name: group
-        for group in gl.groups.get(E3_GROUP_ID).subgroups.list(all=True, lazy=True)
+        for group in gl.groups.get(E3_GROUP_ID).subgroups.list(all=True)
     }
 
     def get_group(name: str) -> gitlab.v4.objects.Group:
@@ -32,10 +32,11 @@ def group(gl: gitlab.Gitlab, name: str, _all: bool, modules: bool):
         print(f"There are {len(groups.keys())} groups:")
         for name in groups.keys():
             print(f"- {name}")
+            # todo: below can actually just be removed
             if modules:
                 group = get_group(name)
                 for module in group.projects.list(all=True):
-                    print(f"{module.name}")
+                    print(module.name)
     else:
         if name is None:
             print("You need to specify a group.")
@@ -60,7 +61,7 @@ def module(gl: gitlab.Gitlab, name: str, _all: bool, git_url: bool, tags: bool):
     projects = {
         project.name: project
         for project in gl.groups.get(E3_GROUP_ID).projects.list(
-            all=True, lazy=True, include_subgroups=True
+            all=True, include_subgroups=True
         )
     }
 
